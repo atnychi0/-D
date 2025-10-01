@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juanita: Recursive Symbolic Encryption</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-input, .form-textarea {
+            background-color: #1f2937;
+            border: 1px solid #4b5563;
+            color: #d1d5db;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+        }
+        .btn {
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .result-box {
+            background-color: #111827;
+            border: 1px solid #374151;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl bg-gray-800 rounded-lg shadow-2xl p-6 md:p-8 space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-white">Juanita Encryption System</h1>
+            <p class="text-gray-400 mt-2">A recursive symbolic cryptographic system for advanced threat environments.</p>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Left Column: Inputs and Controls -->
+            <div class="space-y-4">
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-300 mb-1">Message</label>
+                    <textarea id="message" rows="5" class="form-textarea w-full rounded-md p-2" placeholder="Enter your secret message..."></textarea>
+                </div>
+                <div>
+                    <label for="initialKey" class="block text-sm font-medium text-gray-300 mb-1">Initial Secret Key</label>
+                    <input type="password" id="initialKey" class="form-input w-full rounded-md p-2" placeholder="Enter your secret key...">
+                </div>
+                 <div>
+                    <label for="rounds" class="block text-sm font-medium text-gray-300 mb-1">Recursive Rounds</label>
+                    <input type="number" id="rounds" value="3" min="1" max="100" class="form-input w-full rounded-md p-2">
+                </div>
+                <div class="flex space-x-4">
+                    <button id="encryptBtn" class="btn w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Encrypt</button>
+                    <button id="decryptBtn" class="btn w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md">Decrypt</button>
+                </div>
+            </div>
+
+            <!-- Right Column: Outputs -->
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Result</h3>
+                    <div id="result" class="result-box min-h-[140px] rounded-md p-3 text-gray-300 text-sm font-mono"></div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Key Mutation Trail</h3>
+                    <div id="mutationTrail" class="result-box min-h-[100px] max-h-48 overflow-y-auto rounded-md p-3 text-gray-400 text-xs font-mono"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Core Juanita Logic based on the provided White Paper ---
+
+        /**
+         * Converts a string to a hex string representation.
+         * @param {string} str The input string.
+         * @returns {string} The hex-encoded string.
+         */
+        function stringToHex(str) {
+            return Array.from(str).map(c => 
+                c.charCodeAt(0).toString(16).padStart(2, '0')
+            ).join('');
+        }
+
+        /**
+         * Converts a hex string back to a regular string.
+         * @param {string} hex The hex-encoded string.
+         * @returns {string} The decoded string.
+         */
+        function hexToString(hex) {
+            let str = '';
+            for (let i = 0; i < hex.length; i += 2) {
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+            }
+            return str;
+        }
+
+        /**
+         * Asynchronously creates a SHA-256 hash of a string.
+         * @param {string} str The string to hash.
+         * @returns {Promise<string>} A promise that resolves to the hex representation of the hash.
+         */
+        async function sha256(str) {
+            const buffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        /**
+         * Mutates the key based on the round number and optional environmental data.
+         * This is the JavaScript implementation of the Python `mutate` function.
+         * @param {string} key The current key.
+         * @param {number} roundNumber The current round number.
+         * @returns {Promise<string>} The mutated key.
+         */
+        async function mutate(key, roundNumber) {
+            // For demonstration, environmental data is simulated with a timestamp.
+            // In a real system, this could include mouse position, network latency, etc.
+            const environmentData = JSON.stringify({ timestamp: Date.now() });
+            
+            let mutatedKey = await sha256(key + roundNumber.toString());
+            mutatedKey = await sha256(mutatedKey + environmentData);
+            return mutatedKey;
+        }
+
+        /**
+         * Applies recursive encryption or decryption to the data.
+         * Implements the simple XOR-based logic from the white paper.
+         * @param {string} data The data to process (as a hex string).
+         * @param {string} initialKey The initial key for this layer.
+         * @param {boolean} encrypt True for encryption, False for decryption.
+         * @param {number} rounds Number of recursive rounds.
+         * @param {function} updateTrail Callback to update the UI with key mutations.
+         * @returns {Promise<string>} The processed data (as a hex string).
+         */
+        async function recursiveLayer(data, initialKey, encrypt, rounds, updateTrail) {
+            let currentKey = initialKey;
+            let currentData = data;
+            
+            for (let i = 0; i < rounds; i++) {
+                // Simple XOR-based operation
+                let processedData = '';
+                for (let j = 0; j < currentData.length; j++) {
+                    // Extend the key if it's shorter than the data
+                    const keyChar = currentKey[j % currentKey.length];
+                    processedData += String.fromCharCode(currentData.charCodeAt(j) ^ keyChar.charCodeAt(0));
+                }
+                currentData = processedData;
+
+                // Mutate the key for the next round and update UI
+                currentKey = await mutate(currentKey, i + 1); // Use i+1 to show mutation for the *next* round
+                if(updateTrail) updateTrail(i, currentKey);
+            }
+            return currentData;
+        }
+        
+        // --- UI Element Event Listeners ---
+        const messageEl = document.getElementById('message');
+        const initialKeyEl = document.getElementById('initialKey');
+        const roundsEl = document.getElementById('rounds');
+        const encryptBtn = document.getElementById('encryptBtn');
+        const decryptBtn = document.getElementById('decryptBtn');
+        const resultEl = document.getElementById('result');
+        const mutationTrailEl = document.getElementById('mutationTrail');
+
+        encryptBtn.addEventListener('click', async () => {
+            const message = messageEl.value;
+            const initialKey = initialKeyEl.value;
+            const rounds = parseInt(roundsEl.value, 10);
+
+            if (!message || !initialKey || !rounds) {
+                resultEl.textContent = 'Error: Please fill in all fields.';
+                return;
+            }
+            
+            resultEl.textContent = 'Encrypting...';
+            mutationTrailEl.innerHTML = '';
+            
+            const initialMutatedKey = await mutate(initialKey, 0);
+            
+            const trail = [`Round 0 (Initial): ${initialMutatedKey.substring(0, 16)}...`];
+            const updateTrail = (round, key) => {
+                trail.push(`Round ${round + 1}: ${key.substring(0, 16)}...`);
+            };
+
+            const encryptedMessage = await recursiveLayer(message, initialMutatedKey, true, rounds, updateTrail);
+            
+            resultEl.textContent = stringToHex(encryptedMessage); // Display as hex for better readability
+            mutationTrailEl.innerHTML = trail.join('\n');
+        });
+
+        decryptBtn.addEventListener('click', async () => {
+            const encryptedHex = resultEl.textContent;
+            const initialKey = initialKeyEl.value;
+            const rounds = parseInt(roundsEl.value, 10);
+
+            if (!encryptedHex || !initialKey || !rounds || encryptedHex.startsWith('Error') || encryptedHex.startsWith('Encrypting')) {
+                resultEl.textContent = 'Error: Encrypt a message first or provide a valid key.';
+                return;
+            }
+
+            mutationTrailEl.innerHTML = '';
+            const encryptedMessage = hexToString(encryptedHex);
+
+            const initialMutatedKey = await mutate(initialKey, 0);
+            
+            const trail = [`Round 0 (Initial): ${initialMutatedKey.substring(0, 16)}...`];
+            const updateTrail = (round, key) => {
+                trail.push(`Round ${round + 1}: ${key.substring(0, 16)}...`);
+            };
+
+            const decryptedMessage = await recursiveLayer(encryptedMessage, initialMutatedKey, false, rounds, updateTrail);
+
+            resultEl.textContent = decryptedMessage;
+            mutationTrailEl.innerHTML = trail.join('\n');
+        });
+
+    </script>
+</body>
+</html>
