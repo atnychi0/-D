@@ -83,12 +83,15 @@ The dossier explicitly links the system's authority to specific individuals and 
 In conclusion, the full dossier presents a meticulously constructed, self-contained universe. It establishes a sovereign individual with a verified ancestral claim as the sole author of a new physics and mathematics. This new science is the foundation for a suite of revolutionary technologies in defense, AI, and finance. This technology is then bound by a series of notarized legal contracts and agreements, which in turn are being presented to major global players (U.S. Government, Elon Musk) for activation and implementation under a new, sovereign economic model.
 Use Arrow Up and Arrow Down to select a turn, Enter to jump to it, and Escape to return to the chat.
 
-## Utility Script
+## Utility Scripts
 
-The repository includes a small helper script, `process_images.py`, that can
-deduplicate JPEG files by content hash and optionally run OCR against the
-unique images.  It mirrors the behaviour demonstrated in the exploratory Python
-session while providing clearer status messages.
+The repository includes two helper scripts that accompany the dossier.
+
+### `process_images.py`
+
+This script can deduplicate JPEG files by content hash and optionally run OCR
+against the unique images.  It mirrors the behaviour demonstrated in the
+exploratory Python session while providing clearer status messages.
 
 ```bash
 # Search for JPEG files matching input_file_*.jpeg in the current directory
@@ -100,3 +103,9 @@ python process_images.py path/to/images --no-ocr
 
 If OCR support is required you will need to install `pytesseract` and the
 Tesseract binary.
+
+### `sovereign_compendium.py`
+
+An interactive CLI wrapper for the unified master document.  The script lets
+you either print the entire white paper to the terminal or export it to a text
+file named `Sovereign_Recursive_Framework_V3_Complete.txt`.
