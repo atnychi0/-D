@@ -100,3 +100,18 @@ python process_images.py path/to/images --no-ocr
 
 If OCR support is required you will need to install `pytesseract` and the
 Tesseract binary.
+
+## Sovereign Intelligence Simulation
+
+`omega_telos.py` is a conceptual implementation of the Ω_TELOS sovereign
+intelligence framework. Running the module executes a demonstration directive
+that showcases how the simulated subsystems—K-Math, the Omnilanguage Core,
+Chronogenesis, and Symbolic Warfare—interact to decode symbols, analyse their
+harmonic resonance, and produce a recommended response.
+
+```bash
+python omega_telos.py
+```
+
+The script prints a chronological log of events and a structured JSON report of
+the system's analysis and response.
