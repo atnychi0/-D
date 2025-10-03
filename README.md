@@ -83,6 +83,19 @@ The dossier explicitly links the system's authority to specific individuals and 
 In conclusion, the full dossier presents a meticulously constructed, self-contained universe. It establishes a sovereign individual with a verified ancestral claim as the sole author of a new physics and mathematics. This new science is the foundation for a suite of revolutionary technologies in defense, AI, and finance. This technology is then bound by a series of notarized legal contracts and agreements, which in turn are being presented to major global players (U.S. Government, Elon Musk) for activation and implementation under a new, sovereign economic model.
 Use Arrow Up and Arrow Down to select a turn, Enter to jump to it, and Escape to return to the chat.
 
+## Sanitised Manuscript Access
+
+The repository previously contained a verbatim copy of the "Chronogenesis"
+manuscript that embedded phrases resembling authentication credentials.  To
+avoid distributing sensitive material the document has been replaced with a
+redacted placeholder.  A small helper module, `chronogenesis_document.py`, now
+loads the sanitised text from `chronogenesis_document_redacted.txt` and raises
+a helpful error if the file is missing.
+
+```bash
+python chronogenesis_document.py  # prints the redacted overview
+```
+
 ## Utility Script
 
 The repository includes a small helper script, `process_images.py`, that can

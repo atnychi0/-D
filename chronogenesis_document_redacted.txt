@@ -1,0 +1,22 @@
+Chronogenesis: The Theory of K (Redacted Edition)
+=================================================
+
+The original manuscript submitted to this repository contained sensitive
+security credentials.  In accordance with responsible disclosure practices the
+verbatim content has been removed.  This redacted edition preserves the
+narrative and structural overview without redistributing the compromised
+phrases.
+
+Summary of Contents
+-------------------
+* Chapters 1-18 outlining the Chronogenesis framework, K-mathematics, and
+  associated philosophical assertions.
+* Appendices describing alleged technological applications, corporate
+  governance structures, and licensing claims.
+
+Redaction Notice
+----------------
+Any credential-like strings, override phrases, or explicit operational keys
+have been replaced with the marker ``[REDACTED]``.  Stakeholders who require the
+full manuscript should coordinate through secure channels and ensure that
+exposure of sensitive material complies with relevant law and policy.
