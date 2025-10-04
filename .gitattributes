@@ -1,0 +1,2 @@
+# Treat build artifacts as binary to avoid newline normalization
+/dist/* binary
